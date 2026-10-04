@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모멘텀 포트폴리오 리밸런싱 리포트 (2026-09-30)</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --border-dark: #0f172a;
+            --up-red: #dc2626;
+            --down-blue: #2563eb;
+            --gray-light: #f1f5f9;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-page); color: var(--text-main); padding: 28px 20px; line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header { margin-bottom: 24px; border-bottom: 2px solid var(--text-main); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .header-meta { font-size: 14px; color: var(--text-sub); margin-top: 4px; }
+
+        /* 블랙 & 화이트 톤의 깔끔한 컨트롤 패널 */
+        .control-panel {
+            background: #ffffff;
+            color: var(--text-main);
+            padding: 20px 24px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 6px; }
+        .control-label { font-size: 12px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-wrapper { display: flex; align-items: center; gap: 8px; }
+        .input-amount {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            color: var(--text-main);
+            font-size: 20px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 6px;
+            width: 220px;
+            outline: none;
+            text-align: right;
+            transition: border-color 0.2s;
+        }
+        .input-amount:focus { border-color: var(--text-main); }
+        .unit-text { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        
+        .btn-reset {
+            background: #ffffff;
+            color: var(--text-main);
+            border: 1.5px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-reset:hover { background: #0f172a; color: #ffffff; border-color: #0f172a; }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            width: 100%;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: -0.3px;
+        }
+        .weight-sum-badge {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .weight-ok { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+        .weight-warn { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+
+        /* Full Width Table */
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: #f8fafc; color: #334155; font-weight: 700; padding: 12px 14px; border-bottom: 2px solid var(--border); }
+        td { padding: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover { background: #f8fafc; }
+
+        .weight-input {
+            width: 65px;
+            padding: 6px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+        .weight-input:focus { outline: none; border-color: var(--text-main); }
+
+        .delta-up { color: var(--up-red); font-weight: 700; }
+        .delta-down { color: var(--down-blue); font-weight: 700; }
+        .delta-neutral { color: var(--text-sub); }
+
+        .category-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: #475569;
+            display: inline-block;
+        }
+
+        .briefing-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--text-main);
+            padding: 18px 22px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+        }
+        .briefing-title { font-weight: 800; font-size: 15px; color: var(--text-main); margin-bottom: 6px; }
+        .briefing-text { font-size: 14px; color: #334155; line-height: 1.6; }
+
+        /* 기간 필터 버튼 */
+        .filter-group { display: flex; gap: 6px; }
+        .btn-filter {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-filter.active {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+        .btn-filter:hover:not(.active) { background: #f1f5f9; }
+
+        .rank-table th, .rank-table td { font-size: 13px; padding: 10px 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>📊 포트폴리오 모멘텀 리밸런싱 대시보드</h1>
+            <div class="header-meta">분석 기준일: <strong>2026-09-30</strong> | 전략: 1M/3M/6M/12M 가중 모멘텀 배분</div>
+        </div>
+    </header>
+
+    <!-- 블랙앤화이트 톤 컨트롤 패널 -->
+    <div class="control-panel">
+        <div class="control-group">
+            <span class="control-label">총 투자 금액 (실시간 수정 가능)</span>
+            <div class="input-wrapper">
+                <input type="text" id="totalAmountInput" class="input-amount" value="100,000,000" oninput="updatePortfolio()">
+                <span class="unit-text">원</span>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap: 16px;">
+            <div class="control-group" style="text-align: right;">
+                <span class="control-label">배분 비중 합계</span>
+                <span id="weightSumBadge" class="weight-sum-badge weight-ok">100% (정상)</span>
+            </div>
+            <button class="btn-reset" onclick="resetToDefaultWeights()">기본 비중으로 초기화</button>
+        </div>
+    </div>
+
+    <!-- AI 마켓 브리핑 -->
+    <div class="briefing-box">
+        <div class="briefing-title">💡 포트폴리오 진단 및 모멘텀 분석</div>
+        <div class="briefing-text">기준일(2026-09-30) 전체 자산군 중 1위는 <strong>KIWOOM 200TR</strong>(M-Score: 39.5)입니다. <strong>[수비자산 현금보유 원칙 적용]</strong> 모든 수비자산(채권/달러 등)의 모멘텀 지수가 마이너스를 기록함에 따라 채권 매수 대신 <strong>현금(예수금/CMA) 30% 보유</strong>를 권고합니다. 공격자산 부문에서는 코스피 200과 한국 모멘텀 팩터가 동시에 상위권에 올랐으나, 한국 시장 편중 리스크를 분산하기 위해 각각 15%씩 균등 분할 배분되었습니다.</div>
+    </div>
+
+    <!-- 전체 폭을 활용하는 추천 포트폴리오 배분 카드 -->
+    <div class="card">
+        <div class="card-title">
+            <span>🎯 추천 포트폴리오 배분 (전체 폭 가독성 최적화)</span>
+            <span style="font-size: 13px; color: var(--text-sub); font-weight: normal;">* 비중을 직접 변경하면 매수금액과 수량이 실시간으로 재계산됩니다.</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 160px;">구분</th>
+                    <th style="width: 120px;">자산군</th>
+                    <th>종목명 (코드)</th>
+                    <th style="text-align: right; width: 120px;">현재가</th>
+                    <th style="text-align: right; width: 100px;">M-Score</th>
+                    <th style="text-align: center; width: 100px;">전월대비</th>
+                    <th style="text-align: center; width: 110px;">비중(%)</th>
+                    <th style="text-align: right; width: 160px;">매수금액</th>
+                    <th style="text-align: right; width: 120px;">예상수량</th>
+                </tr>
+            </thead>
+            <tbody id="portfolioTableBody">
+                <!-- 자바스크립트로 동적 렌더링 -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- M-Score 시계열 추이 차트 (기간 필터 및 y축 자동 스케일링) -->
+    <div class="card">
+        <div class="card-title">
+            <span>📉 주요 종목별 M-Score 시계열 추이</span>
+            <div class="filter-group">
+                <button class="btn-filter" onclick="setTrendPeriod('3M')">3개월</button>
+                <button class="btn-filter" onclick="setTrendPeriod('6M')">6개월</button>
+                <button class="btn-filter active" id="btn-1Y" onclick="setTrendPeriod('1Y')">1년</button>
+                <button class="btn-filter" onclick="setTrendPeriod('ALL')">전체</button>
+            </div>
+        </div>
+        <div style="height: 380px;">
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 전체 종목 모멘텀 랭킹 카드 -->
+    <div class="card">
+        <div class="card-title">
+            <span>📈 전체 관심자산 모멘텀 스코어 랭킹 (기준일: 2026-09-30)</span>
+        </div>
+        <table class="rank-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center; width: 60px;">순위</th>
+                    <th style="width: 90px;">분류</th>
+                    <th style="width: 110px;">자산군</th>
+                    <th>종목명</th>
+                    <th style="width: 80px;">코드</th>
+                    <th style="text-align: right; width: 100px;">종가</th>
+                    <th style="text-align: right; width: 90px;">1M</th>
+                    <th style="text-align: right; width: 90px;">3M</th>
+                    <th style="text-align: right; width: 90px;">6M</th>
+                    <th style="text-align: right; width: 90px;">1Y</th>
+                    <th style="text-align: right; width: 110px; background: #0f172a; color: #ffffff;">M-Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">1</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>한국주식</td>
+                    <td><strong>KIWOOM 200TR</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">294400</td>
+                    <td style="text-align: right;">144,000.0원</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+2.29%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-20.63%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+40.26%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+132.58%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">39.52</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">2</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>한국주식</td>
+                    <td><strong>KODEX 모멘텀주</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">275280</td>
+                    <td style="text-align: right;">43,280.0원</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+3.20%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-21.66%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+43.31%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+113.78%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">38.04</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">3</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>아시아주식</td>
+                    <td><strong>ACE 아시아TOP50</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">277540</td>
+                    <td style="text-align: right;">32,150.0원</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+1.28%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-13.59%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+23.87%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+47.14%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">13.97</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">4</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>미국대형주</td>
+                    <td><strong>RISE 미국나스닥100</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">368590</td>
+                    <td style="text-align: right;">30,285.0원</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+1.15%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-11.29%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+16.89%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+18.69%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">5.28</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">5</td>
+                    <td><span class="category-badge">수비자산</span></td>
+                    <td>물가연동채</td>
+                    <td><strong>KIWOOM 물가채KIS</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">430500</td>
+                    <td style="text-align: right;">112,580.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-0.17%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-0.74%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-0.23%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-3.61%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-2.27</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">6</td>
+                    <td><span class="category-badge">수비자산</span></td>
+                    <td>한국국채</td>
+                    <td><strong>KIWOOM 국고채10년</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">148070</td>
+                    <td style="text-align: right;">104,335.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-0.61%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-1.33%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-1.67%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-10.15%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-6.53</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">7</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>미국주식</td>
+                    <td><strong>KODEX 미국S&P500</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">379800</td>
+                    <td style="text-align: right;">23,470.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-1.76%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-10.13%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+6.95%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+10.06%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-9.42</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">8</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>미국외선진국</td>
+                    <td><strong>KODEX MSCI선진국</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">251350</td>
+                    <td style="text-align: right;">38,040.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-2.90%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-10.71%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+4.79%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+10.28%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-14.44</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">9</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>미국소형주</td>
+                    <td><strong>KODEX 미국러셀2000(H)</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">280930</td>
+                    <td style="text-align: right;">15,900.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-6.80%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-6.91%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+12.93%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+11.27%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-18.03</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">10</td>
+                    <td><span class="category-badge">수비자산</span></td>
+                    <td>현금</td>
+                    <td><strong>TIGER 미국달러단기채권액티브</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">329750</td>
+                    <td style="text-align: right;">12,805.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-1.31%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-12.05%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-9.25%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-1.27%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-20.92</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">11</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>한국주식</td>
+                    <td><strong>ACE 코스닥150</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">354500</td>
+                    <td style="text-align: right;">14,620.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-0.10%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-12.51%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-24.58%</td>
+                    <td style="text-align: right; color: #dc2626; font-weight: 600;">+4.28%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-24.03</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">12</td>
+                    <td><span class="category-badge">수비자산</span></td>
+                    <td>미국회사채</td>
+                    <td><strong>KODEX iShares미국하이일드액티브</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">468380</td>
+                    <td style="text-align: right;">10,400.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-4.50%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-15.62%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-12.35%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-8.85%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-37.51</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">13</td>
+                    <td><span class="category-badge">공격자산</span></td>
+                    <td>금</td>
+                    <td><strong>ACE KRX금현물</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">411060</td>
+                    <td style="text-align: right;">25,570.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-9.93%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-6.70%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-17.42%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-6.68%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-46.87</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: center; font-weight: 700;">14</td>
+                    <td><span class="category-badge">수비자산</span></td>
+                    <td>미국장기채</td>
+                    <td><strong>ACE 미국30년국채액티브</strong></td>
+                    <td style="color: var(--text-sub); font-family: monospace;">476760</td>
+                    <td style="text-align: right;">8,355.0원</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-6.33%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-21.48%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-18.41%</td>
+                    <td style="text-align: right; color: #2563eb; font-weight: 600;">-15.44%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">-53.54</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 포트폴리오 데이터
+    const rawPortfolio = [{"분류": "수비자산", "자산군": "현금성자산", "명칭": "현금 (예수금/CMA)", "Code": "-", "close": 1.0, "M_score": 0.0, "delta_M": 0.0, "비중": 30, "금액": 30000000, "예상수량": 30000000, "배분구분": "수비자산 (현금보유 30%)"}, {"분류": "공격자산", "자산군": "한국주식", "명칭": "KIWOOM 200TR", "Code": "294400", "close": 144000.0, "M_score": 39.52, "delta_M": 16.88, "비중": 15, "금액": 15000000, "예상수량": 104, "배분구분": "한국대형주 묶음 (15%)"}, {"분류": "공격자산", "자산군": "한국주식", "명칭": "KODEX 모멘텀주", "Code": "275280", "close": 43280.0, "M_score": 38.04, "delta_M": 8.43, "비중": 15, "금액": 15000000, "예상수량": 346, "배분구분": "한국대형주 묶음 (15%)"}, {"분류": "공격자산", "자산군": "아시아주식", "명칭": "ACE 아시아TOP50", "Code": "277540", "close": 32150.0, "M_score": 13.97, "delta_M": 13.52, "비중": 20, "금액": 20000000, "예상수량": 622, "배분구분": "상위 모멘텀 (20%)"}, {"분류": "공격자산", "자산군": "미국대형주", "명칭": "RISE 미국나스닥100", "Code": "368590", "close": 30285.0, "M_score": 5.28, "delta_M": 6.87, "비중": 20, "금액": 20000000, "예상수량": 660, "배분구분": "상위 모멘텀 (20%)"}];
+    const defaultPortfolio = JSON.parse(JSON.stringify(rawPortfolio));
+    let currentPortfolio = JSON.parse(JSON.stringify(rawPortfolio));
+
+    // 시계열 전체 데이터
+    const fullTrendData = {"dates": ["19.07.31", "19.08.31", "19.09.30", "19.10.31", "19.11.30", "19.12.31", "20.01.31", "20.02.28", "20.03.31", "20.04.30", "20.05.31", "20.06.30", "20.07.31", "20.08.31", "20.09.30", "20.10.31", "20.11.30", "20.12.31", "21.01.31", "21.02.28", "21.03.31", "21.04.30", "21.05.31", "21.06.30", "21.07.31", "21.08.31", "21.09.30", "21.10.31", "21.11.30", "21.12.31", "22.01.31", "22.02.28", "22.03.31", "22.04.30", "22.05.31", "22.06.30", "22.07.31", "22.08.31", "22.09.30", "22.10.31", "22.11.30", "22.12.31", "23.01.31", "23.02.28", "23.03.31", "23.04.30", "23.05.31", "23.06.30", "23.07.31", "23.08.31", "23.09.30", "23.10.31", "23.11.30", "23.12.31", "24.01.31", "24.02.27", "24.03.31", "24.04.30", "24.05.31", "24.06.30", "24.07.31", "24.08.31", "24.10.31", "24.11.30", "24.12.31", "25.01.31", "25.02.28", "25.03.31", "25.04.30", "25.05.31", "25.06.30", "25.07.31", "25.08.31", "25.09.30", "25.10.31", "25.11.15", "25.11.30", "25.12.15", "25.12.31", "26.01.15", "26.01.31", "26.02.15", "26.02.28", "26.03.15", "26.04.01", "26.04.15", "26.04.30", "26.05.15", "26.05.30", "26.06.15", "26.06.30", "26.07.31", "26.08.04", "26.08.31", "26.09.15", "26.09.30"], "series": [{"name": "KIWOOM 200TR", "data": [-22.77, -18.03, 14.98, 6.71, 12.84, 39.61, 0.05, -26.09, -62.16, 20.43, 11.69, 34.08, 42.45, 36.92, 30.1, 4.17, 78.56, 98.27, 80.25, 47.01, 48.86, 47.21, 36.72, 37.52, 4.23, 7.29, -9.23, -13.3, -23.53, 14.76, -42.91, -8.93, -9.11, -14.25, -8.76, -71.06, -2.5, -19.05, -61.38, -0.98, 21.19, -26.75, 32.86, -12.67, 24.65, 13.57, 23.66, 17.14, 19.47, -4.84, -2.2, -32.06, 32.04, 39.93, -6.42, 30.89, 36.56, 15.4, 2.1, 31.69, 12.03, -7.68, -12.93, -31.17, -22.62, 6.22, -2.61, 3.26, -2.93, 34.55, 85.84, 68.36, 35.34, 75.09, 153.54, 114.01, 66.84, 73.37, 83.28, 160.47, 186.61, 175.64, 246.26, 114.79, 22.94, 159.62, 204.55, 238.34, 288.03, 249.77, 208.31, 2.97, -25.71, 22.64, 6.93, 39.52]}, {"name": "KODEX 모멘텀주", "data": [-27.95, -19.72, -5.09, -4.5, -3.89, 35.23, 5.36, -21.44, -54.23, 21.29, 31.75, 65.34, 70.62, 62.22, 31.74, 5.59, 72.99, 92.38, 79.42, 26.12, 43.49, 31.76, 23.59, 38.26, 6.6, 2.14, -14.1, -12.63, -19.87, -3.53, -74.07, -15.7, 0.59, -19.62, -5.38, -72.69, -10.38, -8.23, -68.48, 5.05, 10.95, -32.3, 24.51, 0.75, 44.51, 22.62, 7.29, 31.07, 100.32, 14.35, -15.85, -77.08, 28.02, 20.44, -18.4, 46.38, 48.82, 27.68, 22.11, 55.3, 6.7, -4.03, 12.41, -20.42, -0.28, 39.57, 12.51, 0.81, 17.52, 60.1, 111.9, 72.91, 44.78, 70.72, 125.38, 98.33, 44.01, 51.06, 67.59, 146.29, 175.86, 144.19, 207.78, 98.92, 2.7, 139.72, 197.52, 235.25, 288.38, 244.41, 208.12, -33.96, -39.3, 29.61, -2.56, 38.04]}, {"name": "ACE 아시아TOP50", "data": [4.03, -5.71, 9.5, 6.06, 15.68, 44.72, 10.35, 10.8, -42.89, 22.26, -0.45, 37.7, 46.37, 44.29, 4.63, 20.77, 48.3, 46.61, 78.28, 39.32, 27.65, 23.0, 4.36, 17.52, -30.41, -2.2, -15.6, 0.86, -25.66, -3.84, -7.9, -29.26, -20.76, -35.87, -12.05, -8.73, -24.83, 0.24, -53.32, -57.43, 27.94, -17.08, 50.77, -7.33, 27.28, 6.99, -5.9, 9.39, 13.75, -15.31, -13.14, -17.63, -0.79, 8.24, -14.38, 11.95, 40.03, 41.4, 39.25, 48.78, 20.62, 13.89, 34.61, 2.71, 46.67, 25.04, 56.12, 6.5, -18.02, 18.77, 28.2, 53.33, 29.16, 73.3, 86.42, 61.8, 44.14, 39.69, 17.85, 75.15, 87.85, 58.93, 75.02, 37.51, -0.85, 68.99, 101.88, 112.35, 143.51, 119.22, 105.17, -7.25, -10.38, 0.45, -8.7, 13.97]}, {"name": "RISE 미국나스닥100", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 50.02, 34.77, -40.52, -20.3, 32.18, -30.45, -32.61, -51.28, 33.74, 1.48, -16.91, -0.29, -28.41, -59.54, 2.53, 17.61, 41.49, 39.26, 59.7, 59.98, 41.03, 33.68, 5.03, -2.41, 37.24, 47.42, 60.23, 45.59, 51.66, 24.05, 41.17, 51.29, 8.6, 9.2, 45.49, 34.82, 66.33, 29.2, 6.14, -25.64, -24.41, 21.17, 18.89, 48.53, 23.82, 44.82, 60.16, 38.64, 33.83, 35.15, 10.41, 24.3, 11.63, -10.89, -4.36, 19.66, -0.63, 27.62, 72.61, 91.04, 92.2, 62.54, 61.72, -24.98, -8.91, -1.59, -26.78, 5.28]}, {"name": "KIWOOM 물가채KIS", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 2.78, 3.4, 5.49, 6.02, 1.21, 2.33, 15.94, 15.62, 6.44, 7.89, 7.21, 6.5, 6.34, 3.0, 7.61, 3.13, 3.25, 14.62, -8.26, 6.52, 5.5, 5.09, 12.84, -1.09, 2.47, 1.57, 1.71, -0.3, -4.02, -10.11, -5.62, -0.37, -6.93, -11.67, -9.0, -4.78, -2.29, -2.36, -5.41, 2.64, 0.04, -9.54, -1.7, 4.99, 0.04, -1.95, -0.81, -2.18, -4.56, -2.27]}, {"name": "KIWOOM 국고채10년", "data": [14.67, 12.28, 1.16, -7.15, 3.19, -12.67, 2.55, 6.92, -4.47, 2.82, 5.07, 4.52, 6.93, -6.62, 3.03, -3.45, -4.47, -12.5, -6.01, -11.48, -6.76, -7.2, -6.21, -0.52, 6.22, 1.96, -10.42, -17.35, 6.67, -1.28, -10.67, -7.4, -15.8, -16.32, -11.35, -23.01, 11.69, -23.52, -19.64, -16.39, 10.75, -5.45, 16.02, -14.59, 18.73, 4.04, 0.7, -1.46, -3.9, -0.33, -5.87, -10.88, 18.56, 9.83, 3.27, 0.94, 2.91, -4.18, 2.73, 10.84, 13.92, 8.34, 3.37, 18.28, -18.68, 2.98, 3.64, 2.31, 14.19, -4.87, 2.79, 0.88, 1.76, -2.62, -4.51, -15.97, -12.64, -5.95, -19.93, -25.82, -16.89, -8.89, -4.96, -12.66, -18.47, -3.02, -6.32, -22.3, -11.38, -4.01, -3.37, -8.17, -5.49, -5.43, -13.83, -6.53]}]};
+    let trendChartInstance = null;
+    let currentPeriod = '1Y';
+
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function parseAmount(str) {
+        return parseInt(str.replace(/[^0-9]/g, ""), 10) || 0;
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById("portfolioTableBody");
+        tbody.innerHTML = "";
+        const totalAmount = parseAmount(document.getElementById("totalAmountInput").value);
+
+        currentPortfolio.forEach((item, index) => {
+            const tr = document.createElement("tr");
+
+            const isCash = item.Code === '-' || item.자산군 === '현금성자산';
+
+            const deltaHtml = isCash ? `<span class="delta-neutral">-</span>`
+                : item.delta_M > 0 
+                ? `<span class="delta-up">▲ ${item.delta_M.toFixed(1)}</span>`
+                : item.delta_M < 0 
+                ? `<span class="delta-down">▼ ${Math.abs(item.delta_M).toFixed(1)}</span>`
+                : `<span class="delta-neutral">-</span>`;
+
+            const calcAmount = Math.round(totalAmount * (item.비중 / 100));
+            const calcQty = isCash ? '-' : (item.close > 0 ? formatNumber(Math.floor(calcAmount / item.close)) + '주' : '0주');
+            const priceDisplay = isCash ? '-' : formatNumber(item.close) + '원';
+            const mScoreDisplay = isCash ? '-' : item.M_score.toFixed(1);
+
+            tr.innerHTML = `
+                <td><span class="category-badge">${item.배분구분}</span></td>
+                <td>${item.자산군}</td>
+                <td><strong>${item.명칭}</strong> ${item.Code !== '-' ? `<span style="font-size:12px; color:#94a3b8;">(${item.Code})</span>` : ''}</td>
+                <td style="text-align: right;">${priceDisplay}</td>
+                <td style="text-align: right; font-weight:700;">${mScoreDisplay}</td>
+                <td style="text-align: center;">${deltaHtml}</td>
+                <td style="text-align: center;">
+                    <input type="number" class="weight-input" min="0" max="100" value="${item.비중}" onchange="onWeightChange(${index}, this.value)">
+                </td>
+                <td style="text-align: right; font-weight:800; color:#0f172a;">${formatNumber(calcAmount)}원</td>
+                <td style="text-align: right; font-weight:600; color:#475569;">${calcQty}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        updateWeightSum();
+    }
+
+    function onWeightChange(index, newWeight) {
+        currentPortfolio[index].비중 = parseFloat(newWeight) || 0;
+        renderTable();
+    }
+
+    function updateWeightSum() {
+        const sum = currentPortfolio.reduce((acc, cur) => acc + cur.비중, 0);
+        const badge = document.getElementById("weightSumBadge");
+        if (Math.abs(sum - 100) < 0.01) {
+            badge.className = "weight-sum-badge weight-ok";
+            badge.innerText = `100% (정상)`;
+        } else {
+            badge.className = "weight-sum-badge weight-warn";
+            badge.innerText = `합계: ${sum}% (100% 필요)`;
+        }
+    }
+
+    function updatePortfolio() {
+        const input = document.getElementById("totalAmountInput");
+        const val = parseAmount(input.value);
+        input.value = formatNumber(val);
+        renderTable();
+    }
+
+    function resetToDefaultWeights() {
+        currentPortfolio = JSON.parse(JSON.stringify(defaultPortfolio));
+        renderTable();
+    }
+
+    // 시계열 기간 필터 및 y축 자동 스케일링
+    function setTrendPeriod(period) {
+        currentPeriod = period;
+
+        // 버튼 활성화 토글
+        document.querySelectorAll('.btn-filter').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.innerText === (period === '3M' ? '3개월' : period === '6M' ? '6개월' : period === '1Y' ? '1년' : '전체')) {
+                btn.classList.add('active');
+            }
+        });
+
+        if (!fullTrendData || !fullTrendData.dates) return;
+
+        const totalPoints = fullTrendData.dates.length;
+        let startIndex = 0;
+
+        // 월 2회 기준: 3M=6포인트, 6M=12포인트, 1Y=24포인트
+        if (period === '3M') startIndex = Math.max(0, totalPoints - 6);
+        else if (period === '6M') startIndex = Math.max(0, totalPoints - 12);
+        else if (period === '1Y') startIndex = Math.max(0, totalPoints - 24);
+        else if (period === 'ALL') startIndex = 0;
+
+        const filteredDates = fullTrendData.dates.slice(startIndex);
+
+        let minVal = Infinity;
+        let maxVal = -Infinity;
+
+        const updatedDatasets = fullTrendData.series.map((s, idx) => {
+            const slicedData = s.data.slice(startIndex);
+            slicedData.forEach(v => {
+                if (v !== null && v !== undefined) {
+                    if (v < minVal) minVal = v;
+                    if (v > maxVal) maxVal = v;
+                }
+            });
+
+            const colors = ['#0f172a', '#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#be185d'];
+            return {
+                label: s.name,
+                data: slicedData,
+                borderColor: colors[idx % colors.length],
+                backgroundColor: 'transparent',
+                tension: 0.25,
+                borderWidth: 2,
+                pointRadius: slicedData.length > 30 ? 2 : 3
+            };
+        });
+
+        // y축 auto-scaling: 상하 10% 여유
+        if (minVal === Infinity) minVal = -50;
+        if (maxVal === -Infinity) maxVal = 50;
+        const padding = Math.max(5, (maxVal - minVal) * 0.1);
+        const yMin = Math.floor(minVal - padding);
+        const yMax = Math.ceil(maxVal + padding);
+
+        if (trendChartInstance) {
+            trendChartInstance.data.labels = filteredDates;
+            trendChartInstance.data.datasets = updatedDatasets;
+            trendChartInstance.options.scales.y.min = yMin;
+            trendChartInstance.options.scales.y.max = yMax;
+            trendChartInstance.update();
+        } else {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: filteredDates,
+                    datasets: updatedDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: {
+                            min: yMin,
+                            max: yMax,
+                            title: { display: true, text: 'M-Score', font: { weight: 'bold' } },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 } } },
+                        tooltip: { padding: 10 }
+                    }
+                }
+            });
+        }
+    }
+
+    window.onload = function() {
+        renderTable();
+        setTrendPeriod('1Y');
+    };
+</script>
+</body>
+</html>

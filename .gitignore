@@ -1,0 +1,20 @@
+# [중요 보안] 키움증권 API 개인 키 및 토큰 파일 절대 업로드 금지
+*_appkey.txt
+*_secretkey.txt
+*appkey*
+*secretkey*
+kiwoom_token.json
+kiwoom_token.rds
+*.rds
+*.RData
+*.Rhistory
+.Rproj.user/
+
+# 가상환경 및 캐시
+.venv/
+__pycache__/
+*.pyc
+
+# 시스템 및 임시 파일
+.DS_Store
+Thumbs.db
