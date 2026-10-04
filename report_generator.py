@@ -208,7 +208,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <!-- 전체 폭을 활용하는 추천 포트폴리오 배분 카드 -->
     <div class="card">
         <div class="card-title">
-            <span>🎯 추천 포트폴리오 배분 (전체 폭 가독성 최적화)</span>
+            <span>🎯 추천 포트폴리오 배분</span>
             <span style="font-size: 13px; color: var(--text-sub); font-weight: normal;">* 비중을 직접 변경하면 매수금액과 수량이 실시간으로 재계산됩니다.</span>
         </div>
         <table>
