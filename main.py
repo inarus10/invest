@@ -47,7 +47,7 @@ def update_database(accum_df: pd.DataFrame, new_rows_df: pd.DataFrame, target_da
     print(f"💾 누적 데이터 저장 완료 ({ACCUM_FILE}, 총 {len(updated_df)}행)")
     return updated_df
 
-def run_rebalance_pipeline(target_date_str: str, total_amount: int = 100_000_000, force: bool = False, report_only: bool = False, open_browser: bool = False):
+def run_rebalance_pipeline(target_date_str: str, total_amount: int = 100_000_000, force: bool = False, report_only: bool = False, open_browser: bool = False, push: bool = False):
     """
     지정된 날짜 기준 키움 API 주가 수집 -> M-score 계산 -> 누적 DB 갱신 -> 리포트 생성
     """
@@ -107,12 +107,36 @@ def run_rebalance_pipeline(target_date_str: str, total_amount: int = 100_000_000
     )
 
     print(f"\n✨ 모든 작업 완료! 리포트 파일: {report_file}")
+    
+    # 7. GitHub 원격 저장소 자동 푸시 (옵션)
+    if push:
+        push_to_github(target_date_str)
+
     if open_browser and os.path.exists(report_file):
         try:
             webbrowser.open(f"file:///{os.path.abspath(report_file)}")
         except Exception:
             pass
     return report_file
+
+def push_to_github(target_date_str: str):
+    import subprocess
+    git_bin = os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\WinGet\Packages\Git.MinGit_Microsoft.Winget.Source_8wekyb3d8bbwe\cmd\git.exe")
+    if not os.path.exists(git_bin):
+        git_bin = "git"
+    
+    print(f"\n🚀 GitHub(inarus10/invest) 최신 리포트 자동 업로드 중...")
+    try:
+        subprocess.run([git_bin, "add", "."], check=True, capture_output=True)
+        commit_msg = f"Update rebalancing report: {target_date_str}"
+        subprocess.run([git_bin, "commit", "-m", commit_msg], capture_output=True)
+        res = subprocess.run([git_bin, "push", "origin", "main"], capture_output=True, text=True)
+        if res.returncode == 0:
+            print("✅ GitHub(inarus10/invest) 푸시 완료! (https://inarus10.github.io/invest/)")
+        else:
+            print(f"ℹ️ GitHub 푸시 상태: {res.stderr.strip()}")
+    except Exception as e:
+        print(f"⚠️ GitHub 푸시 중 오류: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="키움 API 기반 모멘텀 포트폴리오 자동화")
@@ -122,13 +146,14 @@ if __name__ == "__main__":
     parser.add_argument("--fill-september", action="store_true", help="9월 15일 및 9월 30일 데이터 연속 수집")
     parser.add_argument("--report-only", action="store_true", help="API 호출 없이 로컬 DB 기반으로 리포트만 재생성")
     parser.add_argument("--open", action="store_true", help="완료 후 기본 웹브라우저로 리포트 자동 열기")
+    parser.add_argument("--push", action="store_true", help="생성 후 GitHub에 자동 커밋 & 푸시")
 
     args = parser.parse_args()
 
     if args.fill_september:
         print("📥 9월 누락 데이터(2026-09-15, 2026-09-30) 연속 수집을 시작합니다...")
         run_rebalance_pipeline("2026-09-15", total_amount=args.amount, force=True)
-        run_rebalance_pipeline("2026-09-30", total_amount=args.amount, force=True, open_browser=args.open)
+        run_rebalance_pipeline("2026-09-30", total_amount=args.amount, force=True, open_browser=args.open, push=args.push)
     else:
         target = args.date if args.date else datetime.now().strftime("%Y-%m-%d")
-        run_rebalance_pipeline(target, total_amount=args.amount, force=args.force, report_only=args.report_only, open_browser=args.open)
+        run_rebalance_pipeline(target, total_amount=args.amount, force=args.force, report_only=args.report_only, open_browser=args.open, push=args.push)

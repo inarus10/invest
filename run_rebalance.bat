@@ -9,19 +9,13 @@ echo ==========================================================
 echo.
 
 if "%~1"=="" (
-    :: 인자 없이 더블클릭한 경우: 일반 실행 (오늘이 15일 또는 말일이면 자동 실행)
-    .venv\Scripts\python.exe main.py --open
-    
-    :: 만약 15일/말일이 아니라서 아무 작업도 안 되었다면 강제 실행 선택지 제공
-    if %ERRORLEVEL% EQU 0 (
-        goto :end
-    )
+    :: 인자 없이 더블클릭한 경우: 기본 실행 (15일/말일 자동 판별 + 웹브라우저 오픈 + GitHub 자동 푸시)
+    .venv\Scripts\python.exe main.py --open --push
 ) else (
-    :: 인자가 전달된 경우 그대로 실행
-    .venv\Scripts\python.exe main.py --open %*
+    :: 인자가 전달된 경우 (예: --force, --date 2026-09-30 등)
+    .venv\Scripts\python.exe main.py --open --push %*
 )
 
-:end
 echo.
 echo ==========================================================
 pause
