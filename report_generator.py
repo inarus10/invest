@@ -131,12 +131,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .category-badge {
             font-size: 12px;
             font-weight: 700;
-            padding: 3px 8px;
+            padding: 3px 6px;
             border-radius: 4px;
             background: #f1f5f9;
             color: #475569;
             display: inline-block;
         }
+
+        .rank-table th, .rank-table td { padding: 10px 5px; font-size: 13.5px; }
 
         .briefing-box {
             background: #ffffff;
@@ -255,33 +257,33 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <table class="rank-table">
             <thead>
                 <tr>
-                    <th style="text-align: center; width: 60px;">순위</th>
-                    <th style="width: 90px;">분류</th>
-                    <th style="width: 110px;">자산군</th>
-                    <th>종목명</th>
-                    <th style="width: 80px;">코드</th>
-                    <th style="text-align: right; width: 100px;">종가</th>
-                    <th style="text-align: right; width: 90px;">1M</th>
-                    <th style="text-align: right; width: 90px;">3M</th>
-                    <th style="text-align: right; width: 90px;">6M</th>
-                    <th style="text-align: right; width: 90px;">1Y</th>
-                    <th style="text-align: right; width: 110px; background: #0f172a; color: #ffffff;">M-Score</th>
+                    <th style="text-align: center; width: 40px; white-space: nowrap;">순위</th>
+                    <th style="text-align: center; width: 48px; white-space: nowrap;">분류</th>
+                    <th style="width: 88px; white-space: nowrap;">자산군</th>
+                    <th style="white-space: nowrap;">종목명</th>
+                    <th style="text-align: center; width: 60px; white-space: nowrap;">코드</th>
+                    <th style="text-align: right; width: 80px; white-space: nowrap;">종가</th>
+                    <th style="text-align: right; width: 58px; white-space: nowrap;">1M</th>
+                    <th style="text-align: right; width: 58px; white-space: nowrap;">3M</th>
+                    <th style="text-align: right; width: 58px; white-space: nowrap;">6M</th>
+                    <th style="text-align: right; width: 58px; white-space: nowrap;">1Y</th>
+                    <th style="text-align: right; width: 70px; background: #0f172a; color: #ffffff; white-space: nowrap;">M-Score</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in all_ranks %}
                 <tr>
-                    <td style="text-align: center; font-weight: 700;">{{ loop.index }}</td>
-                    <td><span class="category-badge">{{ row.분류 }}</span></td>
-                    <td>{{ row.자산군 }}</td>
-                    <td><strong>{{ row.명칭 }}</strong></td>
-                    <td style="color: var(--text-sub); font-family: monospace;">{{ row.Code }}</td>
-                    <td style="text-align: right;">{{ "{:,}".format(row.close) }}원</td>
-                    <td style="text-align: right; color: {{ '#dc2626' if row['1M']>0 else '#2563eb' }}; font-weight: 600;">{{ "{:+.2f}".format(row['1M']) }}%</td>
-                    <td style="text-align: right; color: {{ '#dc2626' if row['3M']>0 else '#2563eb' }}; font-weight: 600;">{{ "{:+.2f}".format(row['3M']) }}%</td>
-                    <td style="text-align: right; color: {{ '#dc2626' if row['6M']>0 else '#2563eb' }}; font-weight: 600;">{{ "{:+.2f}".format(row['6M']) }}%</td>
-                    <td style="text-align: right; color: {{ '#dc2626' if row['1Y']>0 else '#2563eb' }}; font-weight: 600;">{{ "{:+.2f}".format(row['1Y']) }}%</td>
-                    <td style="text-align: right; font-weight: 800; font-size: 15px; background: #f8fafc; color: #0f172a;">{{ "{:.2f}".format(row.M_score) }}</td>
+                    <td style="text-align: center; font-weight: 700; white-space: nowrap;">{{ loop.index }}</td>
+                    <td style="text-align: center; white-space: nowrap;"><span class="category-badge">{{ '공격' if '공격' in row.분류 else '수비' }}</span></td>
+                    <td style="white-space: nowrap;">{{ row.자산군 }}</td>
+                    <td style="white-space: nowrap;"><strong>{{ row.명칭 }}</strong></td>
+                    <td style="text-align: center; color: var(--text-sub); font-family: monospace; white-space: nowrap;">{{ row.Code }}</td>
+                    <td style="text-align: right; white-space: nowrap;">{{ "{:,}".format(row.close) }}원</td>
+                    <td style="text-align: right; color: {{ '#dc2626' if row['1M']>0 else '#2563eb' }}; font-weight: 600; white-space: nowrap;">{{ "{:+.2f}".format(row['1M']) }}%</td>
+                    <td style="text-align: right; color: {{ '#dc2626' if row['3M']>0 else '#2563eb' }}; font-weight: 600; white-space: nowrap;">{{ "{:+.2f}".format(row['3M']) }}%</td>
+                    <td style="text-align: right; color: {{ '#dc2626' if row['6M']>0 else '#2563eb' }}; font-weight: 600; white-space: nowrap;">{{ "{:+.2f}".format(row['6M']) }}%</td>
+                    <td style="text-align: right; color: {{ '#dc2626' if row['1Y']>0 else '#2563eb' }}; font-weight: 600; white-space: nowrap;">{{ "{:+.2f}".format(row['1Y']) }}%</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 14px; background: #f8fafc; color: #0f172a; white-space: nowrap;">{{ "{:.2f}".format(row.M_score) }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
