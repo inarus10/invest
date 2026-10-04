@@ -108,16 +108,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         /* Full Width Table */
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { background: #f8fafc; color: #334155; font-weight: 700; padding: 12px 14px; border-bottom: 2px solid var(--border); }
-        td { padding: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background: #f8fafc; color: #334155; font-weight: 700; padding: 12px 8px; border-bottom: 2px solid var(--border); }
+        td { padding: 12px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         tr:hover { background: #f8fafc; }
 
         .weight-input {
-            width: 65px;
-            padding: 6px 8px;
+            width: 52px;
+            padding: 5px 2px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
-            text-align: right;
+            text-align: center;
             font-weight: 700;
             font-size: 14px;
             color: var(--text-main);
@@ -214,15 +214,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 160px;">구분</th>
-                    <th style="width: 120px;">자산군</th>
-                    <th>종목명 (코드)</th>
-                    <th style="text-align: right; width: 120px;">현재가</th>
-                    <th style="text-align: right; width: 100px;">M-Score</th>
-                    <th style="text-align: center; width: 100px;">전월대비</th>
-                    <th style="text-align: center; width: 110px;">비중(%)</th>
-                    <th style="text-align: right; width: 160px;">매수금액</th>
-                    <th style="text-align: right; width: 120px;">예상수량</th>
+                    <th style="width: 75px; text-align: center; white-space: nowrap;">구분</th>
+                    <th style="width: 105px; white-space: nowrap;">자산군</th>
+                    <th style="white-space: nowrap;">종목명 (코드)</th>
+                    <th style="text-align: right; width: 90px; white-space: nowrap;">현재가</th>
+                    <th style="text-align: right; width: 65px; white-space: nowrap;">M-Score</th>
+                    <th style="text-align: center; width: 75px; white-space: nowrap;">전월대비</th>
+                    <th style="text-align: center; width: 65px; white-space: nowrap;">비중(%)</th>
+                    <th style="text-align: right; width: 125px; white-space: nowrap;">매수금액</th>
+                    <th style="text-align: right; width: 70px; white-space: nowrap;">예상수량</th>
                 </tr>
             </thead>
             <tbody id="portfolioTableBody">
@@ -331,17 +331,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const mScoreDisplay = isCash ? '-' : item.M_score.toFixed(1);
 
             tr.innerHTML = `
-                <td><span class="category-badge">${item.배분구분}</span></td>
-                <td>${item.자산군}</td>
-                <td><strong>${item.명칭}</strong> ${item.Code !== '-' ? `<span style="font-size:12px; color:#94a3b8;">(${item.Code})</span>` : ''}</td>
-                <td style="text-align: right;">${priceDisplay}</td>
-                <td style="text-align: right; font-weight:700;">${mScoreDisplay}</td>
-                <td style="text-align: center;">${deltaHtml}</td>
-                <td style="text-align: center;">
+                <td style="text-align: center; white-space: nowrap;"><span class="category-badge">${item.분류}</span></td>
+                <td style="white-space: nowrap;">${item.자산군}</td>
+                <td style="white-space: nowrap;"><strong>${item.명칭}</strong> ${item.Code !== '-' ? `<span style="font-size:12px; color:#94a3b8; font-family: monospace;">(${item.Code})</span>` : ''}</td>
+                <td style="text-align: right; white-space: nowrap;">${priceDisplay}</td>
+                <td style="text-align: right; font-weight:700; white-space: nowrap;">${mScoreDisplay}</td>
+                <td style="text-align: center; white-space: nowrap;">${deltaHtml}</td>
+                <td style="text-align: center; white-space: nowrap;">
                     <input type="number" class="weight-input" min="0" max="100" value="${item.비중}" onchange="onWeightChange(${index}, this.value)">
                 </td>
-                <td style="text-align: right; font-weight:800; color:#0f172a;">${formatNumber(calcAmount)}원</td>
-                <td style="text-align: right; font-weight:600; color:#475569;">${calcQty}</td>
+                <td style="text-align: right; font-weight:800; color:#0f172a; white-space: nowrap;">${formatNumber(calcAmount)}원</td>
+                <td style="text-align: right; font-weight:600; color:#475569; white-space: nowrap;">${calcQty}</td>
             `;
             tbody.appendChild(tr);
         });
