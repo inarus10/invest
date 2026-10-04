@@ -234,7 +234,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <!-- M-Score 시계열 추이 차트 (기간 필터 및 y축 자동 스케일링) -->
     <div class="card">
         <div class="card-title">
-            <span>📉 주요 종목별 M-Score 시계열 추이</span>
+            <span>📉 주요 종목별 M-Score 시계열 추이 <span style="font-size: 13px; font-weight: normal; color: var(--text-sub); margin-left: 8px;">(수비자산: 점선)</span></span>
             <div class="filter-group">
                 <button class="btn-filter" onclick="setTrendPeriod('3M')">3개월</button>
                 <button class="btn-filter" onclick="setTrendPeriod('6M')">6개월</button>
@@ -242,7 +242,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <button class="btn-filter" onclick="setTrendPeriod('ALL')">전체</button>
             </div>
         </div>
-        <div style="height: 380px;">
+        <div style="height: 420px;">
             <canvas id="trendChart"></canvas>
         </div>
     </div>
@@ -415,14 +415,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 }
             });
 
-            const colors = ['#0f172a', '#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#be185d'];
+            const colors = [
+                '#0f172a', '#2563eb', '#059669', '#d97706', '#dc2626', 
+                '#7c3aed', '#0891b2', '#be185d', '#475569', '#0d9488', 
+                '#ea580c', '#6366f1'
+            ];
+            const isDefensive = s.isDefensive || s.category === '수비자산';
             return {
-                label: s.name,
+                label: s.name + (isDefensive ? ' (수비)' : ''),
                 data: slicedData,
                 borderColor: colors[idx % colors.length],
                 backgroundColor: 'transparent',
+                borderDash: isDefensive ? [6, 4] : [], // 수비자산은 점선 처리
+                borderWidth: isDefensive ? 2.5 : 2,
                 tension: 0.25,
-                borderWidth: 2,
                 pointRadius: slicedData.length > 30 ? 2 : 3
             };
         });
@@ -522,19 +528,39 @@ def generate_html_report(
     sub_df['DateStr'] = pd.to_datetime(sub_df['Date']).dt.strftime('%y.%m.%d')
     dates = sorted(sub_df['DateStr'].unique().tolist())
 
+    # 기본 추천 포트폴리오 종목들 (현금 제외)
     target_stocks = [r['명칭'] for r in portfolio_df.to_dict(orient='records') if r['Code'] != '-']
-    if len(target_stocks) < 6:
-        for r in all_ranks[:6]:
-            if r['명칭'] not in target_stocks:
-                target_stocks.append(r['명칭'])
+
+    # 사용자 필수 지정 비교 종목: S&P, 코스닥, 금, 달러단기채
+    mandatory_stocks = [
+        'KODEX 미국S&P500', 
+        'ACE 코스닥150', 
+        'ACE KRX금현물', 
+        'TIGER 미국달러단기채권액티브'
+    ]
+    for s in mandatory_stocks:
+        if s not in target_stocks and s in sub_df['명칭'].values:
+            target_stocks.append(s)
+
+    # 추가로 전체 상위 랭킹 종목들도 여유 시 포함
+    for r in all_ranks[:5]:
+        if r['명칭'] not in target_stocks and r['명칭'] in sub_df['명칭'].values:
+            target_stocks.append(r['명칭'])
+
+    # 종목별 분류(공격자산 / 수비자산) 매핑
+    category_map = dict(zip(sub_df['명칭'], sub_df['분류']))
 
     series_list = []
-    for stock_name in target_stocks[:8]:
+    for stock_name in target_stocks:
         stk_data = sub_df[sub_df['명칭'] == stock_name].sort_values(by='Date')
         m_map = dict(zip(stk_data['DateStr'], stk_data['M_score']))
         data_points = [round(m_map.get(d, 0), 2) if d in m_map else None for d in dates]
+        cat = category_map.get(stock_name, "공격자산")
+        is_defensive = (cat == '수비자산')
         series_list.append({
             "name": stock_name,
+            "category": cat,
+            "isDefensive": is_defensive,
             "data": data_points
         })
 
