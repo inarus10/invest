@@ -418,7 +418,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const colors = [
                 '#0f172a', '#2563eb', '#059669', '#d97706', '#dc2626', 
                 '#7c3aed', '#0891b2', '#be185d', '#475569', '#0d9488', 
-                '#ea580c', '#6366f1'
+                '#ea580c', '#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'
             ];
             const isDefensive = s.isDefensive || s.category === '수비자산';
             return {
@@ -531,13 +531,14 @@ def generate_html_report(
     # 기본 추천 포트폴리오 종목들 (현금 제외)
     target_stocks = [r['명칭'] for r in portfolio_df.to_dict(orient='records') if r['Code'] != '-']
 
-    # 사용자 필수 지정 비교 종목: S&P, 코스닥, 금, 달러단기채, 30년국채
+    # 사용자 필수 지정 비교 종목: S&P, 코스닥, 금, 달러단기채, 30년국채, 10년국채
     mandatory_stocks = [
         'KODEX 미국S&P500', 
         'ACE 코스닥150', 
         'ACE KRX금현물', 
         'TIGER 미국달러단기채권액티브',
-        'ACE 미국30년국채액티브'
+        'ACE 미국30년국채액티브',
+        'KIWOOM 국고채10년'
     ]
     for s in mandatory_stocks:
         if s not in target_stocks and s in sub_df['명칭'].values:
