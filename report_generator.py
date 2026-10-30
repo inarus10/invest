@@ -534,10 +534,10 @@ def generate_html_report(
     # 기본 추천 포트폴리오 종목들 (현금 제외)
     target_stocks = [r['명칭'] for r in portfolio_df.to_dict(orient='records') if r['Code'] != '-']
 
-    # 사용자 필수 지정 비교 종목: S&P, 코스닥, 금, 달러단기채, 30년국채, 10년국채
+    # 사용자 필수 지정 비교 종목: S&P, 200TR, 금, 달러단기채, 30년국채, 10년국채
     mandatory_stocks = [
         'KODEX 미국S&P500', 
-        'ACE 코스닥150', 
+        'KIWOOM 200TR', 
         'ACE KRX금현물', 
         'TIGER 미국달러단기채권액티브',
         'ACE 미국30년국채액티브',
@@ -547,8 +547,8 @@ def generate_html_report(
         if s not in target_stocks and s in sub_df['명칭'].values:
             target_stocks.append(s)
 
-    # 추가로 전체 상위 랭킹 종목들도 여유 시 포함
-    for r in all_ranks[:5]:
+    # 추가로 전체 상위 7개 랭킹 종목들도 포함
+    for r in all_ranks[:7]:
         if r['명칭'] not in target_stocks and r['명칭'] in sub_df['명칭'].values:
             target_stocks.append(r['명칭'])
 
