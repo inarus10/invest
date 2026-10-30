@@ -515,8 +515,9 @@ def generate_html_report(
     if cash_holding:
         ai_commentary += "<strong>[수비자산 현금보유 원칙 적용]</strong> 모든 수비자산(채권/달러 등)의 모멘텀 지수가 마이너스를 기록함에 따라 채권 매수 대신 <strong>현금(예수금/CMA) 30% 보유</strong>를 권고합니다. "
     else:
-        def_top = portfolio_df[portfolio_df['분류'] == '수비자산'].iloc[0] if not portfolio_df.empty else None
-        if def_top:
+        def_rows = portfolio_df[portfolio_df['분류'] == '수비자산']
+        def_top = def_rows.iloc[0] if not def_rows.empty else None
+        if def_top is not None:
             ai_commentary += f"수비자산 중에서는 <strong>{def_top['명칭']}</strong>(M-Score: {def_top['M_score']:.1f})이 양호한 모멘텀으로 30% 배정되었습니다. "
 
     is_split_applied = any("15%" in str(b) for b in portfolio_df['배분구분'])

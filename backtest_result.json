@@ -1,0 +1,308 @@
+{
+  "stats": {
+    "전략 A (실제 기록 DB)": {
+      "Total Return (%)": 112.71,
+      "CAGR (%)": 28.66,
+      "Ann. Volatility (%)": 17.84,
+      "Sharpe Ratio": 1.36,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -24.5,
+      "Calmar Ratio": 1.17,
+      "vs S&P500 (%p)": 26.15,
+      "vs 나스닥100 (%p)": 0.03
+    },
+    "전략 B (정기 월말 Monthly)": {
+      "Total Return (%)": 110.1,
+      "CAGR (%)": 28.13,
+      "Ann. Volatility (%)": 17.81,
+      "Sharpe Ratio": 1.34,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -24.7,
+      "Calmar Ratio": 1.14,
+      "vs S&P500 (%p)": 23.54,
+      "vs 나스닥100 (%p)": -2.58
+    },
+    "전략 C (현행 격주 Bi-weekly)": {
+      "Total Return (%)": 89.99,
+      "CAGR (%)": 23.9,
+      "Ann. Volatility (%)": 17.9,
+      "Sharpe Ratio": 1.14,
+      "Sortino Ratio": 0.08,
+      "MDD (%)": -24.09,
+      "Calmar Ratio": 0.99,
+      "vs S&P500 (%p)": 3.43,
+      "vs 나스닥100 (%p)": -22.69
+    },
+    "KODEX 미국S&P500 (국내ETF)": {
+      "Total Return (%)": 86.56,
+      "CAGR (%)": 23.15,
+      "Ann. Volatility (%)": 15.6,
+      "Sharpe Ratio": 1.24,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -19.15,
+      "Calmar Ratio": 1.21,
+      "vs S&P500 (%p)": 0.0,
+      "vs 나스닥100 (%p)": -26.12
+    },
+    "RISE 미국나스닥100 (국내ETF)": {
+      "Total Return (%)": 112.68,
+      "CAGR (%)": 28.65,
+      "Ann. Volatility (%)": 20.51,
+      "Sharpe Ratio": 1.21,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -24.28,
+      "Calmar Ratio": 1.18,
+      "vs S&P500 (%p)": 26.12,
+      "vs 나스닥100 (%p)": 0.0
+    },
+    "SPY (미국직투, 원화환산)": {
+      "Total Return (%)": 80.08,
+      "CAGR (%)": 21.7,
+      "Ann. Volatility (%)": 17.1,
+      "Sharpe Ratio": 1.07,
+      "Sortino Ratio": 0.09,
+      "MDD (%)": -17.49,
+      "Calmar Ratio": 1.24,
+      "vs S&P500 (%p)": -6.48,
+      "vs 나스닥100 (%p)": -32.6
+    },
+    "QQQ (미국직투, 원화환산)": {
+      "Total Return (%)": 107.03,
+      "CAGR (%)": 27.5,
+      "Ann. Volatility (%)": 21.75,
+      "Sharpe Ratio": 1.11,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -21.21,
+      "Calmar Ratio": 1.3,
+      "vs S&P500 (%p)": 20.47,
+      "vs 나스닥100 (%p)": -5.65
+    },
+    "SPY (달러 순수지수)": {
+      "Total Return (%)": 81.24,
+      "CAGR (%)": 21.96,
+      "Ann. Volatility (%)": 15.52,
+      "Sharpe Ratio": 1.18,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -19.0,
+      "Calmar Ratio": 1.16,
+      "vs S&P500 (%p)": -5.32,
+      "vs 나스닥100 (%p)": -31.44
+    },
+    "QQQ (달러 순수지수)": {
+      "Total Return (%)": 108.36,
+      "CAGR (%)": 27.77,
+      "Ann. Volatility (%)": 20.59,
+      "Sharpe Ratio": 1.17,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -22.88,
+      "Calmar Ratio": 1.21,
+      "vs S&P500 (%p)": 21.8,
+      "vs 나스닥100 (%p)": -4.32
+    },
+    "KIWOOM 코스피200TR": {
+      "Total Return (%)": 269.78,
+      "CAGR (%)": 54.74,
+      "Ann. Volatility (%)": 38.49,
+      "Sharpe Ratio": 1.28,
+      "Sortino Ratio": 0.1,
+      "MDD (%)": -40.54,
+      "Calmar Ratio": 1.35,
+      "vs S&P500 (%p)": 183.22,
+      "vs 나스닥100 (%p)": 157.1
+    }
+  },
+  "yearly": {
+    "2023 (4Q)": {
+      "전략 A (실제 기록 DB)": 6.97,
+      "전략 B (정기 월말 Monthly)": 6.97,
+      "전략 C (현행 격주 Bi-weekly)": 2.55,
+      "KODEX 미국S&P500 (국내ETF)": 8.02,
+      "RISE 미국나스닥100 (국내ETF)": 11.12,
+      "SPY (미국직투, 원화환산)": 7.57,
+      "QQQ (미국직투, 원화환산)": 9.56,
+      "SPY (달러 순수지수)": 12.25,
+      "QQQ (달러 순수지수)": 14.33,
+      "KIWOOM 코스피200TR": 13.45
+    },
+    "2024": {
+      "전략 A (실제 기록 DB)": 18.73,
+      "전략 B (정기 월말 Monthly)": 18.99,
+      "전략 C (현행 격주 Bi-weekly)": 18.69,
+      "KODEX 미국S&P500 (국내ETF)": 44.04,
+      "RISE 미국나스닥100 (국내ETF)": 45.29,
+      "SPY (미국직투, 원화환산)": 40.36,
+      "QQQ (미국직투, 원화환산)": 42.6,
+      "SPY (달러 순수지수)": 23.4,
+      "QQQ (달러 순수지수)": 25.36,
+      "KIWOOM 코스피200TR": -9.36
+    },
+    "2025": {
+      "전략 A (실제 기록 DB)": 33.48,
+      "전략 B (정기 월말 Monthly)": 33.96,
+      "전략 C (현행 격주 Bi-weekly)": 24.4,
+      "KODEX 미국S&P500 (국내ETF)": 14.05,
+      "RISE 미국나스닥100 (국내ETF)": 16.49,
+      "SPY (미국직투, 원화환산)": 13.77,
+      "QQQ (미국직투, 원화환산)": 17.03,
+      "SPY (달러 순수지수)": 16.79,
+      "QQQ (달러 순수지수)": 20.14,
+      "KIWOOM 코스피200TR": 94.2
+    },
+    "2026": {
+      "전략 A (실제 기록 DB)": 25.48,
+      "전략 B (정기 월말 Monthly)": 23.22,
+      "전략 C (현행 격주 Bi-weekly)": 25.48,
+      "KODEX 미국S&P500 (국내ETF)": 5.13,
+      "RISE 미국나스닥100 (국내ETF)": 13.08,
+      "SPY (미국직투, 원화환산)": 4.83,
+      "QQQ (미국직투, 원화환산)": 13.23,
+      "SPY (달러 순수지수)": 12.03,
+      "QQQ (달러 순수지수)": 21.01,
+      "KIWOOM 코스피200TR": 85.16
+    }
+  },
+  "asset_alloc": [
+    {
+      "자산명": "TIGER 미국달러단기채권액티브",
+      "평균 편입비중 (%)": 14.0
+    },
+    {
+      "자산명": "ACE KRX금현물",
+      "평균 편입비중 (%)": 11.9
+    },
+    {
+      "자산명": "ACE 아시아TOP50",
+      "평균 편입비중 (%)": 11.3
+    },
+    {
+      "자산명": "KODEX 모멘텀주",
+      "평균 편입비중 (%)": 10.5
+    },
+    {
+      "자산명": "RISE 미국나스닥100",
+      "평균 편입비중 (%)": 9.8
+    },
+    {
+      "자산명": "KIWOOM 200TR",
+      "평균 편입비중 (%)": 9.6
+    },
+    {
+      "자산명": "KODEX 미국S&P500",
+      "평균 편입비중 (%)": 4.7
+    },
+    {
+      "자산명": "현금 (CMA)",
+      "평균 편입비중 (%)": 4.5
+    },
+    {
+      "자산명": "KIWOOM 국고채10년",
+      "평균 편입비중 (%)": 4.5
+    },
+    {
+      "자산명": "KIWOOM 물가채KIS",
+      "평균 편입비중 (%)": 4.3
+    },
+    {
+      "자산명": "ACE 미국30년국채액티브",
+      "평균 편입비중 (%)": 4.3
+    },
+    {
+      "자산명": "KODEX 미국러셀2000(H)",
+      "평균 편입비중 (%)": 3.7
+    },
+    {
+      "자산명": "ACE 코스닥150",
+      "평균 편입비중 (%)": 3.0
+    },
+    {
+      "자산명": "KODEX iShares미국하이일드액티브",
+      "평균 편입비중 (%)": 2.3
+    },
+    {
+      "자산명": "KODEX MSCI선진국",
+      "평균 편입비중 (%)": 1.7
+    }
+  ],
+  "rebal_history_sample": [
+    {
+      "Rebal_Date": "2026-05-15",
+      "Target_Date": "2026-05-15",
+      "Allocation": "TIGER 미국달러단기채권액티브(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), ACE 아시아TOP50(20%), RISE 미국나스닥100(20%)",
+      "Turnover": 0.0,
+      "Fee_Cost": 0.0,
+      "Portfolio_Value": 201424029.02435327
+    },
+    {
+      "Rebal_Date": "2026-06-01",
+      "Target_Date": "2026-05-31",
+      "Allocation": "KODEX iShares미국하이일드액티브(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), ACE 아시아TOP50(20%), RISE 미국나스닥100(20%)",
+      "Turnover": 0.3,
+      "Fee_Cost": 132136.43443077954,
+      "Portfolio_Value": 220095254.28353515
+    },
+    {
+      "Rebal_Date": "2026-06-15",
+      "Target_Date": "2026-06-15",
+      "Allocation": "ACE 미국30년국채액티브(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), ACE 아시아TOP50(20%), RISE 미국나스닥100(20%)",
+      "Turnover": 0.3,
+      "Fee_Cost": 130970.46250673535,
+      "Portfolio_Value": 218153133.7153855
+    },
+    {
+      "Rebal_Date": "2026-06-30",
+      "Target_Date": "2026-06-30",
+      "Allocation": "ACE 미국30년국채액티브(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), ACE 아시아TOP50(20%), RISE 미국나스닥100(20%)",
+      "Turnover": 0.0,
+      "Fee_Cost": 0.0,
+      "Portfolio_Value": 223493653.9113751
+    },
+    {
+      "Rebal_Date": "2026-07-15",
+      "Target_Date": "2026-07-15",
+      "Allocation": "TIGER 미국달러단기채권액티브(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), ACE 아시아TOP50(20%), RISE 미국나스닥100(20%)",
+      "Turnover": 0.3,
+      "Fee_Cost": 121889.07132288224,
+      "Portfolio_Value": 203026563.13348085
+    },
+    {
+      "Rebal_Date": "2026-07-31",
+      "Target_Date": "2026-07-31",
+      "Allocation": "현금 (CMA)(30%), KODEX 미국러셀2000(H)(30%), KIWOOM 200TR(20%), KIWOOM 물가채KIS(20%)",
+      "Turnover": 0.7,
+      "Fee_Cost": 265375.0816686667,
+      "Portfolio_Value": 189288254.68166468
+    },
+    {
+      "Rebal_Date": "2026-08-18",
+      "Target_Date": "2026-08-15",
+      "Allocation": "KIWOOM 물가채KIS(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), KODEX 미국러셀2000(H)(20%), KODEX 미국S&P500(20%)",
+      "Turnover": 0.3,
+      "Fee_Cost": 114446.11123897598,
+      "Portfolio_Value": 190629072.62038764
+    },
+    {
+      "Rebal_Date": "2026-08-31",
+      "Target_Date": "2026-08-31",
+      "Allocation": "현금 (CMA)(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), ACE 코스닥150(20%), KODEX 미국러셀2000(H)(20%)",
+      "Turnover": 0.35,
+      "Fee_Cost": 131850.35296604162,
+      "Portfolio_Value": 188225796.74137914
+    },
+    {
+      "Rebal_Date": "2026-09-15",
+      "Target_Date": "2026-09-15",
+      "Allocation": "현금 (CMA)(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), KIWOOM 물가채KIS(20%), ACE 아시아TOP50(20%)",
+      "Turnover": 0.4,
+      "Fee_Cost": 147096.8876300051,
+      "Portfolio_Value": 183724012.64987633
+    },
+    {
+      "Rebal_Date": "2026-09-30",
+      "Target_Date": "2026-09-30",
+      "Allocation": "현금 (CMA)(30%), KIWOOM 200TR(15%), KODEX 모멘텀주(15%), ACE 아시아TOP50(20%), RISE 미국나스닥100(20%)",
+      "Turnover": 0.2,
+      "Fee_Cost": 75269.21004826971,
+      "Portfolio_Value": 188097755.91062602
+    }
+  ]
+}
